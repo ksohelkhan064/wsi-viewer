@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { ArrowLeft, ZoomIn, ZoomOut, Maximize2, Minimize2 } from "lucide-react";
 import { Card, CardContent } from "../components/ui/card";
 import wsi from "../assets/wsi.png";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 
 const WSIViewer = () => {
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -159,6 +161,57 @@ const WSIViewer = () => {
     }
 
     setIsFullscreen(!isFullscreen);
+  };
+
+  const handleDownloadReport = () => {
+    const doc = new jsPDF();
+
+    // Title
+    doc.setFontSize(20);
+    doc.text("Patient Report", 14, 10);
+    doc.setFontSize(12);
+
+    // Patient Info
+    doc.text(`Patient ID: WSI-2024-001`, 14, 20);
+    doc.text(`Blood Group: O+`, 14, 25);
+    doc.text(`Current Zoom Level: ${(zoomLevel * 100).toFixed(0)}%`, 14, 30);
+
+    // RBC Data Table
+    doc.autoTable({
+      head: [["RBC Name", "Count", "Percentage"]],
+      body: currentData.RBC?.map((item) => [
+        item.name,
+        item.count,
+        item.percentage,
+      ]),
+      startY: 40,
+      theme: "grid",
+    });
+
+    // WBC Data Table
+    doc.autoTable({
+      head: [["WBC Name", "Count", "Percentage"]],
+      body: currentData.WBC?.map((item) => [
+        item.name,
+        item.count,
+        item.percentage,
+      ]),
+      startY: doc.autoTable.previous.finalY + 10, // Start below the previous table
+      theme: "grid",
+    });
+
+    // Platelets Data
+    const plateletsY = doc.autoTable.previous.finalY + 10;
+    doc.text("Platelets Data:", 14, plateletsY);
+    doc.autoTable({
+      head: [["Count", "Percentage"]],
+      body: [[currentData.Platelets?.count, currentData.Platelets?.percentage]],
+      startY: plateletsY + 10,
+      theme: "grid",
+    });
+
+    // Save the document
+    doc.save("WSI_Report.pdf");
   };
 
   return (
@@ -334,12 +387,36 @@ const WSIViewer = () => {
                 </p>
               </div>
 
+              <div className="flex flex-col space-y-2 w-5/6 mx-auto">
+
               <button
-                className="p-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition duration-300"
+                className="flex items-center justify-center p-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-200 ease-in-out transform hover:scale-105"
                 onClick={() => setZoomLevel(1)} // Reset to default zoom level
               >
                 Reset Zoom
               </button>
+
+              <button
+                className="flex items-center justify-center p-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-200 ease-in-out transform hover:scale-105"
+                onClick={handleDownloadReport}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m0 0l-4-4m4 4l4-4"
+                  />
+                </svg>
+                Download Report
+              </button>
+              </div>
             </Card>
           </div>
         </div>
