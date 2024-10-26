@@ -147,7 +147,7 @@ const WSIViewer = () => {
   };
 
   const toggleFullscreen = () => {
-    const viewer = document.documentElement; // or you can target a specific ref element like a div
+    const viewer = document.documentElement;
 
     if (!isFullscreen) {
       if (viewer.requestFullscreen) viewer.requestFullscreen();
@@ -196,7 +196,7 @@ const WSIViewer = () => {
         item.count,
         item.percentage,
       ]),
-      startY: doc.autoTable.previous.finalY + 10, // Start below the previous table
+      startY: doc.autoTable.previous.finalY + 10, 
       theme: "grid",
     });
 
@@ -316,7 +316,6 @@ const WSIViewer = () => {
             </button>
             <button
               className="p-2 hover:bg-gray-100 rounded"
-              //   onClick={() => setIsFullscreen(!isFullscreen)}
               onClick={toggleFullscreen}
             >
               {isFullscreen ? (
@@ -355,7 +354,7 @@ const WSIViewer = () => {
             </Card>
           </div>
 
-          {/* Thumbnail Navigator */}
+          
           <div className="w-64 ml-4">
             <Card>
               <CardContent className="p-4">
@@ -391,7 +390,7 @@ const WSIViewer = () => {
 
               <button
                 className="flex items-center justify-center p-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-200 ease-in-out transform hover:scale-105"
-                onClick={() => setZoomLevel(1)} // Reset to default zoom level
+                onClick={() => setZoomLevel(1)} 
               >
                 Reset Zoom
               </button>
